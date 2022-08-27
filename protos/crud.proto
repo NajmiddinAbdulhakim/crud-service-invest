@@ -7,7 +7,7 @@ service CRUDService {
     rpc GetPostById(PostByIdReq) returns (Post);
     rpc UpdatePost(Post) returns (Post);
     rpc DeletePost(PostByIdReq) returns (DeleteRes);
-    rpc ListPosts(Empty) returns (PostListRes);
+    rpc ListPosts(PostListReq) returns (PostListRes);
 }
 
 message Post {
@@ -25,8 +25,12 @@ message DeleteRes {
     bool success = 1;
 }
 
-message Empty {}
 
 message PostListRes {
     repeated Post posts = 1;
+}
+
+message PostListReq {
+    string page = 1;
+    string limit = 2;
 }
