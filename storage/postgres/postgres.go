@@ -14,36 +14,36 @@ func New(db *sqlx.DB) *crudRepo {
 }
 
 func (r *crudRepo) Create(p *pb.Post) (*pb.Post, error) {
-	query := `INSERT INTO posts VALUES($1, $2, $3, $4) RETURNING *`
+	query := `INSERT INTO posts VALUES($1, $2, $3, $4) RETURNING id, user_id, title, body`
 	row := r.db.QueryRow(query, p.Id, p.UserId, p.Title, p.Body)
 
-	var post *pb.Post
+	var post pb.Post
 	err := row.Scan(
-		post.Id,
-		post.UserId,
-		post.Title,
-		post.Body,
+		&post.Id,
+		&post.UserId,
+		&post.Title,
+		&post.Body,
 	)
 	if err != nil {
 		return nil, err
 	}
-	return post, nil
+	return &post, nil
 }
 
 func (r *crudRepo) GetById(id int64) (*pb.Post, error) {
 	query := `SELECT * from posts WHERE id = $1`
 	row := r.db.QueryRow(query, id)
-	var post *pb.Post
+	var post pb.Post
 	err := row.Scan(
-		post.Id,
-		post.UserId,
-		post.Title,
-		post.Body,
+		&post.Id,
+		&post.UserId,
+		&post.Title,
+		&post.Body,
 	)
 	if err != nil {
 		return nil, err
 	}
-	return post, nil
+	return &post, nil
 }
 
 func (r *crudRepo) Update(p *pb.Post) (*pb.Post, error) {
@@ -56,17 +56,17 @@ func (r *crudRepo) Update(p *pb.Post) (*pb.Post, error) {
 	getQuery := `SELECT * from posts WHERE id = $1`
 	row := r.db.QueryRow(getQuery, p.Id)
 
-	var post *pb.Post
+	var post pb.Post
 	err = row.Scan(
-		post.Id,
-		post.UserId,
-		post.Title,
-		post.Body,
+		&post.Id,
+		&post.UserId,
+		&post.Title,
+		&post.Body,
 	)
 	if err != nil {
 		return nil, err
 	}
-	return post, nil
+	return &post, nil
 }
 
 func (r *crudRepo) Delete(id int64) (bool, error) {
@@ -79,8 +79,9 @@ func (r *crudRepo) Delete(id int64) (bool, error) {
 }
 
 func (r *crudRepo) ListPosts(page, limit int64) ([]*pb.Post, error) {
+	offset := (page - 1) * limit
 	query := `SELECT * FROM posts OFFSET $1 LIMIT $2`
-	rows, err := r.db.Query(query, page, limit)
+	rows, err := r.db.Query(query, offset, limit)
 	if err != nil {
 		return nil, err
 	}

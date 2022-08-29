@@ -39,7 +39,7 @@ func ConnectDB(cfg config.Config) (*sqlx.DB, error) {
 		return nil, fmt.Errorf(`failed to cannecting migrate: %v`, err)
 	}
 
-	if err := m.Up(); err != nil && errors.Is(err, migrate.ErrNoChange) {
+	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		return nil, fmt.Errorf("failed to migrate: %v", err)
 	}
 	return connDB, nil

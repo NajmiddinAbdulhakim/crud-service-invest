@@ -23,16 +23,16 @@ func NewService(db *sqlx.DB) *Service {
 
 func (s *Service) CreatePost(ctx context.Context, req *pb.Post) (*pb.Post, error) {
 	res, err := s.repo.CRUD().Create(req)
-	if nil == err {
+	if nil != err {
 		log.Println(`Failed to creating post: `, err)
-		return nil, status.Error(codes.Internal, `Failed to creating post`)
+		return &pb.Post{}, status.Error(codes.Internal, `Failed to creating post`)
 	}
-	return res, nil
+	return res, err
 }
 
 func (s *Service) GetPostById(ctx context.Context, req *pb.PostByIdReq) (*pb.Post, error) {
 	res, err := s.repo.CRUD().GetById(req.Id)
-	if nil == err {
+	if nil != err {
 		log.Println(`Failed to getting post by id: `, err)
 		return nil, status.Error(codes.Internal, `Failed to getting post by id`)
 	}
@@ -41,7 +41,7 @@ func (s *Service) GetPostById(ctx context.Context, req *pb.PostByIdReq) (*pb.Pos
 
 func (s *Service) UpdatePost(ctx context.Context, req *pb.Post) (*pb.Post, error) {
 	res, err := s.repo.CRUD().Update(req)
-	if nil == err {
+	if nil != err {
 		log.Println(`Failed to updating post: `, err)
 		return nil, status.Error(codes.Internal, `Failed to updating post`)
 	}
@@ -50,7 +50,7 @@ func (s *Service) UpdatePost(ctx context.Context, req *pb.Post) (*pb.Post, error
 
 func (s *Service) DeletePost(ctx context.Context, req *pb.PostByIdReq) (*pb.DeleteRes, error) {
 	res, err := s.repo.CRUD().Delete(req.Id)
-	if nil == err {
+	if nil != err {
 		log.Println(`Failed to deleting post: `, err)
 		return &pb.DeleteRes{Success: res}, status.Error(codes.Internal, `Failed to deleting post`)
 	}
@@ -59,7 +59,7 @@ func (s *Service) DeletePost(ctx context.Context, req *pb.PostByIdReq) (*pb.Dele
 
 func (s *Service) ListPosts(ctx context.Context, req *pb.PostListReq) (*pb.PostListRes, error) {
 	res, err := s.repo.CRUD().ListPosts(req.Page, req.Limit)
-	if nil == err {
+	if nil != err {
 		log.Println(`Failed to getting list posts`, err)
 		return nil, status.Error(codes.Internal, `Failed to getting list posts`)
 	}
